@@ -74,7 +74,8 @@ void uncoverSquare(int numberOfLines, int numberOfColumns, int x, int y, char &c
 
     if(mineMatrix[x/2][y/2]==1)
     {
-        shownMatrix[x][y]=char(254);
+        //shownMatrix[x][y]=char(254);
+        shownMatrix[x][y]='x';
         matchLost=1;
     }
     else
@@ -625,6 +626,7 @@ void changeNeighborSquares(int numberOfLines, int numberOfColumns, int x, int y)
             changeNeighborSquares(numberOfLines,numberOfColumns,x+2,y+2);
         }
     }
+    SetCursorPosition(2*numberOfLines+1,0);
 }
 void resetFreeVariables()
 {
@@ -651,10 +653,10 @@ void printLose(int numberOfLines, int numberOfColumns,int x, int y)
     {
         for(int j=0;j<=2*numberOfColumns;j++)
         {
-            if(i==x&&j==y)
-                shownMatrix[i][j]='x';
+            if(i==x&&j==y);
+                //shownMatrix[i][j]='x';
             else if(i%2==1&&j%2==1&&mineMatrix[i/2][j/2]==1)
-                if(shownMatrix[i][j]!=char(207))
+                if(shownMatrix[i][j]!=char(207)&&shownMatrix[i][j]!='x')
                     shownMatrix[i][j]=char(254);
                 else;
             else if(i%2==1&&j%2==1&&mineMatrix[i/2][j/2]==0&&shownMatrix[i][j]==char(207))
@@ -791,7 +793,7 @@ void chooseDifficulty(int &numberOfLines, int &numberOfColumns, int &numberOfBom
     case 2:
         numberOfLines=14;
         numberOfColumns=14;
-        numberOfBombs=40;
+        numberOfBombs=35;
         break;
     case 3:
         numberOfLines=18;
