@@ -540,6 +540,54 @@ void printShownMatrix(int numberOfLines, int numberOfColumns)
     }
     cout<<"Mines Count: "<<numberOfRemainingBombs<<"   \n";
 }
+void printStarsInColors2(int x, int y)
+{
+    SetCursorPosition(x-1,y*2-2);
+    setColor(12);   cout<<"* ";
+    setColor(6);    cout<<"* ";
+    setColor(14);   cout<<"* ";
+    SetCursorPosition(x,y*2-2);
+    setColor(5);   cout<<"* ";
+    if(shownMatrix[x][y]==char(178))
+    {
+        setColor(0);
+        cout<<char(178)<<' ';
+    }
+    else
+        printCharInColor(x,y);
+    setColor(10);   cout<<"* ";
+    SetCursorPosition(x+1,y*2-2);
+    setColor(13);    cout<<"* ";
+    setColor(9);   cout<<"* ";
+    setColor(11);    cout<<"* ";
+    setColor(8);
+
+}
+void printStarsInColors(int x, int y)
+{
+    SetCursorPosition(x-1,y*2-2);
+    setColor(0);
+    cout<<"* ";
+    cout<<"* ";
+    cout<<"* ";
+    SetCursorPosition(x,y*2-2);
+    cout<<"* ";
+    if(shownMatrix[x][y]==char(178))
+    {
+        setColor(0);
+        cout<<char(178)<<' ';
+    }
+    else
+        printCharInColor(x,y);
+    setColor(0);
+    cout<<"* ";
+    SetCursorPosition(x+1,y*2-2);
+    cout<<"* ";
+    cout<<"* ";
+    cout<<"* ";
+    setColor(8);
+
+}
 void changeNearbySquares (int x, int y)
 {
     SetCursorPosition(x-1,y*2-2);
@@ -627,6 +675,12 @@ void changeNeighborSquares(int numberOfLines, int numberOfColumns, int x, int y)
         }
     }
     SetCursorPosition(2*numberOfLines+1,0);
+    //delete the following lines for only gray cursor
+    if(shownMatrix[x-1][y-1]=='*'&&shownMatrix[x-1][y+1]=='*'&&shownMatrix[x+1][y-1]=='*'&&shownMatrix[x+1][y+1]=='*')
+    {
+        printStarsInColors(x,y);
+        return;
+    }
 }
 void resetFreeVariables()
 {
