@@ -848,8 +848,7 @@ void chooseDifficulty(int &numberOfLines, int &numberOfColumns, int &numberOfBom
     case 2:
         numberOfLines=14;
         numberOfColumns=14;
-        numberOfBombs=8;
-        //numberOfBombs=35;
+        numberOfBombs=35;
         break;
     case 3:
         numberOfLines=18;
@@ -933,7 +932,6 @@ void scorRecord(int x, char difficulty[])
     fstream f;
     int scoreEasy,scoreMedium,scoreExpert,isOk=1,n;
     f.open("score",fstream::in);
-    SetFileAttributes("score", FILE_ATTRIBUTE_HIDDEN);
     f.getline(s,15);
     if(0>=strlen(s))
     {
@@ -948,7 +946,6 @@ void scorRecord(int x, char difficulty[])
         }
     f.close();
     f.open("score",fstream::in);
-    SetFileAttributes("score", FILE_ATTRIBUTE_HIDDEN);
     if(isOk)
         f>>scoreEasy>>scoreMedium>>scoreExpert;
     switch(difficulty[1])
@@ -962,33 +959,36 @@ void scorRecord(int x, char difficulty[])
     case 'x':
         n=scoreExpert;
         break;
+    default:
+        break;
     }
     f.close();
     if(difficulty[1]!='u')
-        cout<<"Highest score for \""<<difficulty<<"\" is: "<<n<<'s'<<'\n';
+        cout<<"Highest score for \""<<difficulty<<"\" difficulty is: "<<n<<'s'<<'\n';
     if(x<n)
     {
-        cout<<"\nCongratulations! New highscore!\n";
+        if(difficulty[1]!='u')
+            cout<<"\nCongratulations! New high-score!\n";
         switch(difficulty[1])
         {
         case 'a':
-            if(x<scoreEasy)
-                scoreEasy=x;
+            scoreEasy=x;
             break;
         case 'e':
-            if(x<scoreMedium)
-                scoreMedium=x;
+            scoreMedium=x;
             break;
         case 'x':
-            if(x<scoreExpert)
-                scoreExpert=x;
+            scoreExpert=x;
+            break;
+        default:
             break;
         }
     }
+    SetFileAttributes("score", FILE_ATTRIBUTE_NORMAL);
     f.open("score",fstream::out);
     f<<scoreEasy<<' '<<scoreMedium<<' '<<scoreExpert;
-    SetFileAttributes("score", FILE_ATTRIBUTE_HIDDEN);
     f.close();
+    SetFileAttributes("score", FILE_ATTRIBUTE_HIDDEN);
 }
 void play(int numberOfLines, int numberOfColumns, int numberOfBombs, char difficulty[])
 {

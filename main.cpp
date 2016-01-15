@@ -2,6 +2,7 @@
 #include "functions.h"
 int main()
 {
+    SetFileAttributes("score", FILE_ATTRIBUTE_HIDDEN);
     system("COLOR FC"); //set the background white and text color red
     int numberOfLines,numberOfColumns,numberOfBombs;
     char difficulty[100];
