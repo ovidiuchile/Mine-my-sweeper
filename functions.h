@@ -933,6 +933,7 @@ void scorRecord(int x, char difficulty[])
     fstream f;
     int scoreEasy,scoreMedium,scoreExpert,isOk=1,n;
     f.open("score",fstream::in);
+    SetFileAttributes("score", FILE_ATTRIBUTE_HIDDEN);
     f.getline(s,15);
     if(0>=strlen(s))
     {
@@ -947,6 +948,7 @@ void scorRecord(int x, char difficulty[])
         }
     f.close();
     f.open("score",fstream::in);
+    SetFileAttributes("score", FILE_ATTRIBUTE_HIDDEN);
     if(isOk)
         f>>scoreEasy>>scoreMedium>>scoreExpert;
     switch(difficulty[1])
@@ -985,6 +987,7 @@ void scorRecord(int x, char difficulty[])
     }
     f.open("score",fstream::out);
     f<<scoreEasy<<' '<<scoreMedium<<' '<<scoreExpert;
+    SetFileAttributes("score", FILE_ATTRIBUTE_HIDDEN);
     f.close();
 }
 void play(int numberOfLines, int numberOfColumns, int numberOfBombs, char difficulty[])
