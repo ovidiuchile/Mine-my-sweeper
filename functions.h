@@ -676,11 +676,11 @@ void changeNeighborSquares(int numberOfLines, int numberOfColumns, int x, int y)
     }
     SetCursorPosition(2*numberOfLines+1,0);
     //delete the following lines for only gray cursor
-    if(shownMatrix[x-1][y-1]=='*'&&shownMatrix[x-1][y+1]=='*'&&shownMatrix[x+1][y-1]=='*'&&shownMatrix[x+1][y+1]=='*')
-    {
-        printStarsInColors(x,y);
-        return;
-    }
+    //if(shownMatrix[x-1][y-1]=='*'&&shownMatrix[x-1][y+1]=='*'&&shownMatrix[x+1][y-1]=='*'&&shownMatrix[x+1][y+1]=='*')
+    //{
+     //   printStarsInColors(x,y);
+     //   return;
+    //}
 }
 void resetFreeVariables()
 {
@@ -760,7 +760,7 @@ void printRules()
             break;
     }
 }
-void chooseDifficulty(int &numberOfLines, int &numberOfColumns, int &numberOfBombs)
+void chooseDifficulty(int &numberOfLines, int &numberOfColumns, int &numberOfBombs, char difficulty[])
 {
     char s[10],key;
     cout<<"\nChoose your difficulty:\n";
@@ -837,6 +837,7 @@ void chooseDifficulty(int &numberOfLines, int &numberOfColumns, int &numberOfBom
     if(s[1]=='e') n=2;
     if(s[1]=='x') n=3;
     if(s[1]=='u') n=4;
+    strcpy(difficulty,s);
     switch(n)
     {
     case 1:
@@ -847,7 +848,8 @@ void chooseDifficulty(int &numberOfLines, int &numberOfColumns, int &numberOfBom
     case 2:
         numberOfLines=14;
         numberOfColumns=14;
-        numberOfBombs=35;
+        numberOfBombs=8;
+        //numberOfBombs=35;
         break;
     case 3:
         numberOfLines=18;
@@ -885,7 +887,107 @@ void chooseDifficulty(int &numberOfLines, int &numberOfColumns, int &numberOfBom
     numberOfRemainingBombs=numberOfBombs;
     numberOfUncoveredSafePlaces=numberOfLines*numberOfColumns-numberOfBombs;
 }
-void play(int numberOfLines, int numberOfColumns, int numberOfBombs)
+void scorRecord2(int x,char difficulty[]) //not used
+{
+    char s1[100],s2[100],s3[100];
+    fstream f;
+    f.open("score", fstream::in);
+    f.get(s1,64);
+    f.get(s2,64);
+    f.get(s3,64);
+    f.close();
+    int n;
+    switch(difficulty[1])
+    {
+    case 'a':
+        decrypt(n,s1);
+        if(x<n)
+            encrypt(x,s1);
+        break;
+    case 'e':
+        decrypt(n,s2);
+        if(x<n)
+            encrypt(x,s2);
+        break;
+    case 'x':
+        decrypt(n,s3);
+        if(x<n)
+            encrypt(x,s3);
+        break;
+    case 'u':
+        break;
+    }
+    cout<<"\nYour score: "<<x<<'s';
+    if(difficulty[1]!='u')
+        cout<<"\nHighest score: "<<n<<'s';
+    if(x<=n)
+        cout<<"\n\nCongratulations! New high score!";
+    f.open("score", fstream::out);
+    f<<s1<<s2<<s3;
+    f.close();
+}
+void scorRecord(int x, char difficulty[])
+{
+    cout<<"\nYour score: "<<x<<'s'<<'\n';
+    char s[15];
+    fstream f;
+    int scoreEasy,scoreMedium,scoreExpert,isOk=1,n;
+    f.open("score",fstream::in);
+    f.getline(s,15);
+    if(0>=strlen(s))
+    {
+        scoreEasy=scoreMedium=scoreExpert=999;
+        isOk=0;
+    }
+    for(int i=0;i<strlen(s);i++)
+        if(!isdigit(s[i])&&s[i]!=' ')
+        {
+            scoreEasy=scoreMedium=scoreExpert=999;
+            isOk=0;
+        }
+    f.close();
+    f.open("score",fstream::in);
+    if(isOk)
+        f>>scoreEasy>>scoreMedium>>scoreExpert;
+    switch(difficulty[1])
+    {
+    case 'a':
+        n=scoreEasy;
+        break;
+    case 'e':
+        n=scoreMedium;
+        break;
+    case 'x':
+        n=scoreExpert;
+        break;
+    }
+    f.close();
+    if(difficulty[1]!='u')
+        cout<<"Highest score for \""<<difficulty<<"\" is: "<<n<<'s'<<'\n';
+    if(x<n)
+    {
+        cout<<"\nCongratulations! New highscore!\n";
+        switch(difficulty[1])
+        {
+        case 'a':
+            if(x<scoreEasy)
+                scoreEasy=x;
+            break;
+        case 'e':
+            if(x<scoreMedium)
+                scoreMedium=x;
+            break;
+        case 'x':
+            if(x<scoreExpert)
+                scoreExpert=x;
+            break;
+        }
+    }
+    f.open("score",fstream::out);
+    f<<scoreEasy<<' '<<scoreMedium<<' '<<scoreExpert;
+    f.close();
+}
+void play(int numberOfLines, int numberOfColumns, int numberOfBombs, char difficulty[])
 {
     printShownMatrix(numberOfLines,numberOfColumns);
     int x,y;
@@ -906,6 +1008,7 @@ void play(int numberOfLines, int numberOfColumns, int numberOfBombs)
                 printWin(numberOfLines,numberOfColumns);
                 SetCursorPosition(numberOfLines*2+2,0);
                 cout<<"\nYou've Won!";
+                scorRecord(0,difficulty);
                 cout<<"\n\nNew game?(Y/N)\n";
                 while(1!=0)
                 {
@@ -926,7 +1029,10 @@ void play(int numberOfLines, int numberOfColumns, int numberOfBombs)
             break;
         }
     }
-    while(1!=0)
+    clock_t start;
+    start=clock();
+    double timp;
+    while(1)
     {
         pressKey(numberOfLines,numberOfColumns,x,y);
         if(matchLost==1)
@@ -944,6 +1050,11 @@ void play(int numberOfLines, int numberOfColumns, int numberOfBombs)
             printWin(numberOfLines,numberOfColumns);
             SetCursorPosition(numberOfLines*2+2,0);
             cout<<"\nYou've Won!";
+            timp=(clock()-start)/(double) CLOCKS_PER_SEC;
+            timp=floor(timp);
+            if(timp>999)
+                timp=999;
+            scorRecord((int)timp,difficulty);
             break;
         }
     }
